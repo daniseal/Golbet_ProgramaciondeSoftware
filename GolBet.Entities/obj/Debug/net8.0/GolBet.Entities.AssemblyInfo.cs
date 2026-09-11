@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GolBet.Entities")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+afe042458ccd2bb37c9478a507ba8c8772852688")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+90e865d15c99c83763fc3dde4f100f9f26069c9b")]
 [assembly: System.Reflection.AssemblyProductAttribute("GolBet.Entities")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GolBet.Entities")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

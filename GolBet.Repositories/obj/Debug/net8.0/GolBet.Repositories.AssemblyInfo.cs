@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GolBet.Repositories")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+90e865d15c99c83763fc3dde4f100f9f26069c9b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fd945afdf02278c0a038a43a26f500a54d3c9cda")]
 [assembly: System.Reflection.AssemblyProductAttribute("GolBet.Repositories")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GolBet.Repositories")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -61,14 +61,17 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 
 var app = builder.Build();
 
-// Seed the database on startup
-using (var scope = app.Services.CreateScope())
+// Preserve local initialization by default; containers explicitly disable it.
+if (builder.Configuration.GetValue<bool?>("Database:InitializeOnStartup") ?? true)
 {
+    using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
 
-    await DbSeeder.SeedAsync(context, roleManager, userManager);
+    await DbSeeder.SeedAsync(context, roleManager, userManager,
+        builder.Configuration["Seed:AdminPassword"],
+        builder.Configuration["Seed:BettorPassword"]);
 }
 
 

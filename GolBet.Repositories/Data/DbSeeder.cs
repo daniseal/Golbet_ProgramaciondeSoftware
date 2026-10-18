@@ -15,13 +15,15 @@ public static class DbSeeder
     public static async Task SeedAsync(
         AppDbContext context,
         RoleManager<IdentityRole> roleManager,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager,
+        string? adminPassword,
+        string? bettorPassword)
     {
         // Applies any pending migration (creates the DB if it does not exist)
         await context.Database.MigrateAsync();
 
         await SeedDomainAsync(context);
-        await SeedIdentityAsync(roleManager, userManager);
+        await SeedIdentityAsync(roleManager, userManager, adminPassword, bettorPassword);
     }
 
     // ---- Domain data: teams and matches (Module 3) ----
@@ -114,7 +116,9 @@ public static class DbSeeder
     // ---- Identity data: roles and admin user (Module 7) ----
     private static async Task SeedIdentityAsync(
         RoleManager<IdentityRole> roleManager,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager,
+        string? adminPassword,
+        string? bettorPassword)
     {
         // Roles (idempotent)
         foreach (var role in new[] { AdminRole, BettorRole })
@@ -126,6 +130,9 @@ public static class DbSeeder
         // Admin user (idempotent)
         if (await userManager.FindByEmailAsync("admin@golbet.com") is null)
         {
+            if (string.IsNullOrWhiteSpace(adminPassword))
+                throw new InvalidOperationException("Configure Seed:AdminPassword para crear el administrador inicial.");
+
             var admin = new AppUser
             {
                 UserName = "admin@golbet.com",
@@ -135,12 +142,15 @@ public static class DbSeeder
                 EmailConfirmed = true
             };
 
-            await userManager.CreateAsync(admin, "Admin123*");
+            await userManager.CreateAsync(admin, adminPassword);
             await userManager.AddToRoleAsync(admin, AdminRole);
         }
 
         if (await userManager.FindByEmailAsync("bettor@golbet.com") is null)
         {
+            if (string.IsNullOrWhiteSpace(bettorPassword))
+                throw new InvalidOperationException("Configure Seed:BettorPassword para crear el apostador inicial.");
+
             var admin = new AppUser
             {
                 UserName = "bettor@golbet.com",
@@ -150,7 +160,7 @@ public static class DbSeeder
                 EmailConfirmed = true
             };
 
-            await userManager.CreateAsync(admin, "Admin123*");
+            await userManager.CreateAsync(admin, bettorPassword);
             await userManager.AddToRoleAsync(admin, BettorRole);
         }
     }

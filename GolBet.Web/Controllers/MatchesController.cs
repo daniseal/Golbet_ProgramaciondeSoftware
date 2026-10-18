@@ -23,10 +23,12 @@ public class MatchesController : Controller
 
     // GET /Matches
     // GET /Matches?status=Scheduled
-    public async Task<IActionResult> Index(MatchStatus? status)
+    public async Task<IActionResult> Index(MatchStatus? status, string? search)
+    // Delega la carga de datos al servicio y almacena el texto ingresado en ViewBag.CurrentSearch
     {
         ViewBag.CurrentStatus = status;
-        var board = await _matchService.GetBoardAsync(status);
+        ViewBag.CurrentSearch = search;
+        var board = await _matchService.GetBoardAsync(status, search);
         return View(board);
     }
 

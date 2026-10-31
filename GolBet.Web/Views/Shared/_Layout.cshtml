@@ -27,20 +27,26 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Matches" asp-action="Index">Partidos</a>
                         </li>
+
+
                         <!-- _Layout.cshtml, dentro del ul del navbar -->
                        <li class="nav-item">
         <a class="nav-link" asp-controller="Teams" asp-action="Index">Equipos</a>
     </li>
+   
+    @if (User.IsInRole("Apostador"))
+{
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Bets" asp-action="MyBets">Mis apuestas</a>
+    </li>
+}
 
-
-
-                    </ul>
+                  </ul>
                     
                         <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
-
     </header>
     <div class="container">
         <main role="main" class="pb-3">

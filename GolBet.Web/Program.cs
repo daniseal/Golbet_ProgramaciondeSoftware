@@ -9,25 +9,27 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using System.Globalization;
+using Serilog;
 
 var culture = new CultureInfo("es-CO");
 // Dates in Spanish; numbers neutral so model binding reads "2.5" correctly
 culture.NumberFormat = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
-culture.NumberFormat.NumberGroupSeparator = "";   // "2,5" fails loudly, never binds as 25
+culture.NumberFormat.NumberGroupSeparator = ""; // "2,5" fails loudly, never binds as 25
 
 CultureInfo.DefaultThreadCurrentCulture = culture;
 CultureInfo.DefaultThreadCurrentUICulture = culture;
 
-
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, config) =>
+    config.ReadFrom.Configuration(context.Configuration));
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-//Este es el nuevo código 
+// Este es el nuevo código
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString
-    ("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // --- after AddDbContext ---
 builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
@@ -43,10 +45,9 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login";           // anonymous hitting [Authorize]
-    options.AccessDeniedPath = "/Account/AccessDenied";  // wrong role
+    options.LoginPath = "/Account/Login";              // anonymous hitting [Authorize]
+    options.AccessDeniedPath = "/Account/AccessDenied"; // wrong role
 });
-
 
 // Open generic registration: one line, a repository for every entity
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -78,22 +79,25 @@ if (builder.Configuration.GetValue<bool?>("Database:InitializeOnStartup") ?? tru
         builder.Configuration["Seed:BettorPassword"]);
 }
 
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Error/General");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+app.UseSerilogRequestLogging();
+
 app.UseRouting();
 
-app.UseAuthentication();   // who are you?  (reads the cookie, builds User)
-app.UseAuthorization();    // may you do this?  (evaluates [Authorize])
+app.UseAuthentication(); // who are you? (reads the cookie, builds User)
+app.UseAuthorization();  // may you do this? (evaluates [Authorize])
 
 app.MapControllerRoute(
     name: "default",
